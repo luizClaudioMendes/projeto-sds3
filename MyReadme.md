@@ -312,7 +312,7 @@ isto ira orientar o typescript que todos os arquivos que serao compilados estara
 
 - Criar o Arquivo '_redirects' , na pasta 'public' com o seguinte conteúdo:
 
-**/* /index.html 200**
+    /* /index.html 200
 
 este arquivo é necessario para que ele funcione corretamente no netlify
 
@@ -352,3 +352,94 @@ ReactDOM.render(
 
 
 - **COMMIT: Project clean**
+
+
+### Passo 3: adicionar Bootstrap e CSS ao projeto
+- para adicionar o Bootstrap, para facilicar o desenvolvimento do frontend, executar o comando:
+```
+yarn add bootstrap
+yarn add @popperjs/core@^2.9.2
+```
+
+- no arquivo index.tsx, colocar este import, embaixo do reactDOM:
+```
+(index.tsx) import 'bootstrap/dist/css/bootstrap.css';
+```
+
+
+- Assets e CSS
+- na pasta src, criar uma nova pasta com o nome 'assets'
+	- dentro do assets, criar uma nova pasta com o nome 'css'
+		-	dentro da pasta css, criar um arquivo chamado 'styles.css' e colocar o seguinte codigo:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+:root {
+    --color-primary: #FF8400;
+}
+
+html, body {
+    height: 100%;
+    font-family: "Ubuntu", sans-serif;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.text-primary {
+    color: var(--color-primary) !important;
+}
+```
+o import é para colocar uma nova fonte, encontrada no google fonts (https://fonts.google.com/) onde voce pode escolher as fontes e o tamanho e o site gerará o codigo para voce importar
+
+definindo as variaveis:
+ --color-primary: #FF8400;
+ 
+ e para usar:
+  background-color: var(--color-primary) !important;
+  
+
+podem ser definidas quiaisquer variaveis.
+
+este codigo aplica a fonte no projeto todo
+html, body {
+    height: 100%;
+    font-family: "Ubuntu", sans-serif;
+}
+
+os css do bootstrap podem ser alterados neste arquivo.
+
+
+voce pode consultar isso no bootstrap 
+https://getbootstrap.com/docs/4.0/utilities/colors/
+
+
+- agora no arquivo App.tsx e adicionar no h1 do ola mundo, para ele ficar laranja:
+
+```html
+<h1 className="text-primary">Olá mundo!</h1>
+```
+
+- agora no arquivo index.tsx, como ultimo import, colocar:
+
+```
+(index.tsx) import 'assets/css/styles.css';
+```
+- **COMMIT: Bootstrap**
+
