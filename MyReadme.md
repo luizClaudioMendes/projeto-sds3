@@ -827,5 +827,78 @@ mas agora vamos ao primeiro deploy
   - Site settings -> Domain Management: (colocar o nome que você quiser)
   - Deploys -> Trigger deploy
 
+# Aula 2
+
+## Objetivos do projeto para esta aula
+- Implementar o back end
+  - Modelo de domínio
+  - Estruturar o back end no padrão camadas
+  - Consulta paginada de vendas
+  - Consultas agrupadas para gráficos
+  - Implantação na nuvem
+
+## Checklist
+
+OBS:
+comando git para ver o log de commits "encolhido"
+
+ **git log --oneline**
+ 
+ caso voce tenha desinstalado o projeto localmente e queira coloca-lo para funcionar, basta clonar o projeto do github.
+ 
+ no frontend, abra um terminado do git e digite:
+ **yarn**
+ 
+ para que ele baixe novamente os node_modules
+ 
+ depois basta digitar
+ **yarn start**
+ 
+ para inicializar a aplicacao localmente.
+ 
+ 
+
+### Passo 1: configuração de segurança
+é preciso liberar o cors para que o front possa acessar o backend. por padrao os navegadores nao permitem que o frontend acesse outros dominios. para isso é preciso liberar o cors.
+
+entao vamos fazer a configuracao de segurança.
+este codigo é um codigo padrao do framework.
+
+entao vamos criar uma nova classe, com o nome 'securityConfig' no package config
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Autowired
+	private Environment env;
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+			http.headers().frameOptions().disable();
+		}
+		
+		http.cors().and().csrf().disable();
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.authorizeRequests().anyRequest().permitAll();
+	}
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+}
+```
+
+pronto. agora se acessarmos no navegador o localhost:8080 nao deverá mais exibir aquela tela de login e sim 
+*"Whitelabel Error Page
+This application has no explicit mapping for /error, so you are seeing this as a fallback."*
 
 
+- **COMMIT: Security config**
