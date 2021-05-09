@@ -1175,3 +1175,128 @@ public class Sale {
 
 
 - **COMMIT: Domain model, database seed**
+
+### Passo 3: Estruturar o projeto em camadas
+
+### Padrão camadas adotado
+- Criar repositories
+- Criar DTO's
+- Criar service
+- Criar controller
+
+-criar uma nova package chamada 'repositories'
+-criar uma nova interface chamada 'sellerRepository' que deverá extender JpaRepository
+
+    public interface SellerRepository extends JpaRepository<Seller, Long>{
+    
+    }
+    
+
+- criar um novo package chamado 'services'
+-criar uma nova classe chamada 'SellerService'
+    
+@Service
+public class SellerService {
+	
+	@Autowired
+	private SellerRepository repository;
+	
+	public List<SellerDTO> findAll() {
+		List<Seller> result = repository.findAll();
+		
+		return result.stream().map(x -> new SellerDTO(x)).collect(Collectors.toList())
+	}
+
+}
+    
+
+- criar um novo package chamado 'dto'
+- criar uma nova classe chamada 'SellerDTO'
+    
+    public class SellerDTO implements Serializable{
+    
+    	private static final long serialVersionUID = 5717099817218715058L;
+    
+    	private Long id;
+    	private String name;
+    	
+    	public SellerDTO() {
+    	}
+    
+    	public SellerDTO(Long id, String name) {
+    		this.id = id;
+    		this.name = name;
+    	}
+    	
+    	public SellerDTO(Seller seller) {
+    		id = seller.getId();
+    		name = seller.getName();
+    	}
+    
+    	public Long getId() {
+    		return id;
+    	}
+    
+    	public void setId(Long id) {
+    		this.id = id;
+    	}
+    
+    	public String getName() {
+    		return name;
+    	}
+    
+    	public void setName(String name) {
+    		this.name = name;
+    	}
+    
+    }
+    
+    
+
+
+- criar um novo package chamado 'controllers'
+- criar uma nova classe chamada 'SellerController'
+    
+    @RestController
+    @RequestMapping(value = "/sellers")
+    public class SellerController {
+    	
+    	@Autowired
+    	private SellerService service;
+    	
+    	@GetMapping
+    	public ResponseEntity<List<SellerDTO>> findAll () {
+    		List<SellerDTO> list = service.findAll();
+    		
+    		return ResponseEntity.ok(list);
+    	}
+    	
+    
+    }
+    
+    
+    
+
+
+pronto. vamos testar e commitar
+
+no navegador, basta colocar :
+
+http://localhost:8080/sellers
+
+que será retornado o json com os resultados.
+
+para testes é melhor usar o postman.
+
+#### como criar enviroments no postman
+- clicar em new e selecionar 'enviroments'
+- colocar o nome dele
+- criar uma variavel chamada host com o valor http://localhost:8080/
+
+pronto. agora para utilizar ele basta 
+usar {{host}}/
+
+ex:
+{{host}}/sellers
+
+- **COMMIT: Layers**
