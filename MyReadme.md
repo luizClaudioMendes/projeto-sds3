@@ -802,3 +802,30 @@ entao o index.tsx ficou:
 
 - **COMMIT: Static charts**
 
+
+### Passo 6: implantação no Netlify
+
+se voce ainda nao tem uma conta no netlify, crie uma agora.
+
+digite no navegador:
+netlify.com
+
+- se logue.
+
+o netlify faz deploy continuo, ou seja, quando a branch que eles estiver monitorando alterar, ele irá fazer o build deploy automatico. 
+
+mas agora vamos ao primeiro deploy
+- clique no 'new site from git'
+- escolha github
+- procure o repositorio do projeto
+- configure o deploy
+- branch: main
+  - Comando: yarn build
+  - Diretório: build
+  - Deploy! (vai quebrar)
+  - Site settings -> Build & Deploy: (colocar o nome da sua subpasta do projeto frontend)
+  - Site settings -> Domain Management: (colocar o nome que você quiser)
+  - Deploys -> Trigger deploy
+
+
+
