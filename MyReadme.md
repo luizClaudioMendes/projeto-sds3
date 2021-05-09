@@ -443,3 +443,362 @@ https://getbootstrap.com/docs/4.0/utilities/colors/
 ```
 - **COMMIT: Bootstrap**
 
+## componentes do React JS
+### Passo 4: adicionar componentes estáticos básicos
+onde obtemos a informaçao sobre como montar os componentes?
+no site do bootstrap tem exemplos e os componentes como botoes, etc
+https://getbootstrap.com/docs/4.0/components/buttons/
+
+os componentes sao o coraçao do react. toda montagem da tela deve ser compostar de componentes, que sao blocos de html, so que tem a sintaxe do JSX.
+
+como criar um componente?
+um componente nada mais é do que uma function do javascript que retorna os elementos da tela.
+exemplo o App.tsx
+
+o export diz o que fica visivel nos outros componentes.
+
+- Navbar
+index.jsx
+    
+    
+    import NavBar from "components/NavBar";
+    
+    function App() {
+      return (
+        <div>
+          <h1 className="text-primary">Olá mundo!</h1>
+          <NavBar />
+        </div>
+      );
+    }
+    
+    export default App;
+    
+    
+    
+    
+
+e no App.tsx para testar:
+
+
+import NavBar from "components/NavBar";
+    
+    function App() {
+      return (
+        <>
+          <NavBar />
+          <div>
+            <h1 className="text-primary">Olá mundo!</h1>
+    
+          </div>
+        </>
+      );
+    }
+    
+    export default App;
+    
+    
+    
+    
+repara que foi necessário colocar o fragment <> e fechar o fragment </>
+
+o retorno da funcao do componente pode ter apenas 1 elemento. para delimitar tudo como um elemento só basta colocar o fragment.
+
+
+
+
+```html
+<div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-light border-bottom shadow-sm">
+  <div className="container">
+    <nav className="my-2 my-md-0 mr-md-3">
+      <img src={ImgDsDark} alt="DevSuperior" width="120" />
+    </nav>
+  </div>
+</div>
+```
+ok. so que o conteudo da pagina ainda esta colado no lado esquerdo da tela, enquanto o navbar esta com um padding.
+
+para consertar isso vamos usar uma classe do bootstrap,
+que se chama container, que ele delimitar uma area no meio da tela.
+
+para isso, basta adicionar na div principal, a **className="container"**
+
+pronto.
+
+agora vamos criar o footer.
+
+- do mesmo jeito, na pasta 'components' criar uma pasta chamada 'Footer'.
+- nela, criar um arquivo chamado index.tsx e colar o codigo abaixo:
+
+- Footer
+```html
+<footer className="footer mt-auto py-3 bg-dark">
+  <div className="container">
+    <p className="text-light">App desenvolvido por <a href="https://github.com/acenelio" target="_blank" rel="noreferrer">Nelio Alves</a></p>
+    <p className="text-light"><small><strong>Semana Spring React</strong><br/>
+      Evento promovido pela escola DevSuperior: <a href="https://instagram.com/devsuperior.ig" target="_blank" rel="noreferrer">@devsuperior.ig</a></small></p>
+  </div>
+</footer>
+```
+
+index.tsx
+    
+      const Footer = ()  => {
+        return (
+            <footer className="footer mt-auto py-3 bg-dark">
+      <div className="container">
+        <p className="text-light">App desenvolvido por <a href="https://www.linkedin.com/in/luizclaudiomendes" target="_blank" rel="noreferrer">Luiz Mendes</a></p>
+        <p className="text-light"><small><strong>Semana Spring React</strong><br/>
+          Evento promovido pela escola DevSuperior: <a href="https://instagram.com/devsuperior.ig" target="_blank" rel="noreferrer">@devsuperior.ig</a></small></p>
+          <p className="text-light"><small>em maio de 2021</small></p>
+      </div>
+    </footer>
+        );
+    }
+    
+    export default Footer;
+    
+    
+
+beleza, agora vamos criar o componente da tabela de vendas
+
+- na pasta 'components' criar nova pasta chamada 'DataTable'
+
+index.tsx
+    
+    
+    const DataTable = () => {
+      return (
+        <div className="table-responsive">
+          <table className="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Vendedor</th>
+                <th>Clientes visitados</th>
+                <th>Negócios fechados</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>22/04/2021</td>
+                <td>Barry Allen</td>
+                <td>34</td>
+                <td>25</td>
+                <td>15017.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    
+    export default DataTable;
+    
+    
+    
+
+
+com o codigo original:
+```html
+<div className="table-responsive">
+    <table className="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Vendedor</th>
+                <th>Clientes visitados</th>
+                <th>Negócios fechados</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>22/04/2021</td>
+                <td>Barry Allen</td>
+                <td>34</td>
+                <td>25</td>
+                <td>15017.00</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+```
+
+e incluir no App.tsx o componente da tabela para que possamos ve-la
+
+
+
+- **COMMIT: Basic static components**
+
+
+### Passo 5: adicionar gráficos estáticos
+bom agora para os graficos, precisamos instalar umas bibliotecas, a **apexcharts** e a **react-apexcharts**.
+
+elas que vao criar os graficos para nós.
+
+- Apex Charts
+```bash
+yarn add apexcharts
+yarn add react-apexcharts
+```
+
+agora vamos criar os componentes, um vai ser o grafico de barras e o outro o grafico de donut
+
+no site do apex charts (https://apexcharts.com/docs/react-charts/) voce encontra os dados e outros graficos.
+
+de novo, seguir os mesmos passos para criar componentes e adicionar o codigo abaixo, lembrando que o codigo abaixo somente sao o mock dos dados:
+
+- BarChart
+```javascript
+const options = {
+    plotOptions: {
+        bar: {
+            horizontal: true,
+        }
+    },
+};
+
+const mockData = {
+    labels: {
+        categories: ['Anakin', 'Barry Allen', 'Kal-El', 'Logan', 'Padmé']
+    },
+    series: [
+        {
+            name: "% Sucesso",
+            data: [43.6, 67.1, 67.7, 45.6, 71.1]                   
+        }
+    ]
+};
+```
+entao o index.tsx ficará assim, lembrando que ainda estamos com os dados mockados:
+    
+    
+    import Chart from "react-apexcharts";
+    
+    const BarChart = () => {
+        const options = {
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                }
+            },
+        };
+    
+        const mockData = {
+            labels: {
+                categories: ['Anakin', 'Barry Allen', 'Kal-El', 'Logan', 'Padmé']
+            },
+            series: [
+                {
+                    name: "% Sucesso",
+                    data: [43.6, 67.1, 67.7, 45.6, 71.1]
+                }
+            ]
+        };
+    
+        return (
+            <Chart 
+                options={{...options, xaxis: mockData.labels}} 
+                series={mockData.series} 
+                type="bar" 
+                height={240} />
+        );
+    }
+    
+    export default BarChart;
+    
+    
+    
+
+e adicionamos no App.tsx o grafico.
+fizemos um pequeno truque agora. o grafico ocupara metade da tela, logo como ainda nao fizemos o grafico de donut, vamos colocar o grafico de barras duas vezes:
+
+    
+    
+    import BarChart from "components/BarChart";
+    import DataTable from "components/DataTable";
+    import Footer from "components/Footer";
+    import NavBar from "components/NavBar";
+    
+    function App() {
+      return (
+        <>
+          <NavBar />
+          <div className="container">
+            <h1 className="text-primary py-3">Dashboard de vendas</h1>
+            <div className="row px-3">
+              <div className="col-sm-6">
+                <h5>Todas Vendas</h5>
+                <BarChart />
+              </div>
+              <div className="col-sm-6">
+                <h5>Todas Vendas</h5>
+                <BarChart />
+              </div>
+    
+            </div>
+            <DataTable />
+          </div>
+          <Footer />
+        </>
+      );
+    }
+    
+    export default App;
+    
+    
+```
+
+agora vamos criar o grafico de donut, do mesmo jeito que criamos o bar chart:
+
+
+
+- DonutChart
+```javascript
+const mockData = {
+    series: [477138, 499928, 444867, 220426, 473088],
+    labels: ['Anakin', 'Barry Allen', 'Kal-El', 'Logan', 'Padmé']
+}
+
+const options = {
+    legend: {
+        show: true
+    }
+}
+```
+
+
+entao o index.tsx ficou:
+    
+    import Chart from "react-apexcharts";
+    
+    const DonutChart = () => {
+        const mockData = {
+            series: [477138, 499928, 444867, 220426, 473088],
+            labels: ['Anakin', 'Barry Allen', 'Kal-El', 'Logan', 'Padmé']
+        }
+    
+        const options = {
+            legend: {
+                show: true
+            }
+        }
+    
+        return (
+            <Chart
+                options={{ ...options, labels: mockData.labels }}
+                series={mockData.series}
+                type="donut"
+                height={240} />
+        );
+    }
+    
+    export default DonutChart;
+    
+    
+
+
+- **COMMIT: Static charts**
+
