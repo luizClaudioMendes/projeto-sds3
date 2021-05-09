@@ -1410,3 +1410,192 @@ ex:
     
 
 - **COMMIT: Pagination**
+
+### Passo 5: Buscas agrupadas (GROUP BY)
+
+- Total de vendas por vendedor
+- Taxa de sucesso por vendedor
+
+agora vamos fazer selects especiais, como por exemplo o total de vendas por vendedor, que usaremos para preencher os graficos
+
+a primeira coisa que precisamos preparar é o objeto com o tipo de dados que precisamos retornar
+
+ex:
+taxa de sucesso 
+
+entao no front agente precisa de
+[
+	{
+		"sellerName": "Anakin",
+		"sum": 13123.0
+	},
+	{
+		"sellerName": "Barry",
+		"sum": 13123.0
+	}
+]
+
+entao precisamos criar no java um DTO com esses dados
+
+SaleSumDTO
+    
+    public class SaleSumDTO implements Serializable{
+    
+    	private static final long serialVersionUID = 1946535240281446349L;
+    
+    	private String sellerName;
+    	private Double sum;
+    	
+    	public SaleSumDTO() {
+    	}
+    
+    	public SaleSumDTO(Seller seller, Double sum) {
+    		this.sellerName = seller.getName();
+    		this.sum = sum;
+    	}
+    	
+    	..GETTERS AND SETTERS
+    
+
+
+agora no repository agente vai acrescentar um metodo customizado para fazer a consulta
+
+    public interface SaleRepository extends JpaRepository<Sale, Long>{
+    
+    	@Query("SELECT new com.luizmendes.dsvendas.dto.SaleSumDTO(obj.seller, SUM(obj.amount) "
+    			+ " FROM Sale AS obj GROUP BY obj.seller")
+    	List<SaleSumDTO> amountGroupedBySeller ();
+    }
+    
+
+e agora criamos os metodos na service e na controller para podermos testar:
+
+[
+    {
+        "sellerName": "Logan",
+        "sum": 220426.0
+    },
+    {
+        "sellerName": "Anakin",
+        "sum": 477138.0
+    },
+    {
+        "sellerName": "BarryAllen",
+        "sum": 499928.0
+    },
+    {
+        "sellerName": "Kal-El",
+        "sum": 444867.0
+    },
+    {
+        "sellerName": "Padme",
+        "sum": 473088.0
+    }
+]
+
+
+agora vamos fazer a porcentagem de sucesso:
+
+o tipo de objeto que agente vai querer é:
+
+[
+	{
+		"sellerName": "Anakin",
+		"visited": 1000,
+		"deals": 800
+	},
+	.....
+]
+
+entao precisamos fazer um DTO com esses dados:
+    
+    public class SaleSuccessDTO implements Serializable{
+    
+    	private static final long serialVersionUID = 1946535240281446349L;
+    
+    	private String sellerName;
+    	private Long visited;
+    	private Long deals;
+    	
+    	
+    	public SaleSuccessDTO() {
+    	}
+    
+    	public SaleSuccessDTO(Seller seller, Long visited, Long deals) {
+    		this.sellerName = seller.getName();
+    		this.visited = visited;
+    		this.deals = deals;
+    	}
+    
+    
+    
+    	public Long getVisited() {
+    		return visited;
+    	}
+    
+    	public void setVisited(Long visited) {
+    		this.visited = visited;
+    	}
+    
+    	public Long getDeals() {
+    		return deals;
+    	}
+    
+    	public void setDeals(Long deals) {
+    		this.deals = deals;
+    	}
+    
+    	public String getSellerName() {
+    		return sellerName;
+    	}
+    
+    	public void setSellerName(String sellerName) {
+    		this.sellerName = sellerName;
+    	}
+    	
+    }
+    
+    
+    
+	
+e no repository:
+    
+    @Query("SELECT new com.luizmendes.dsvendas.dto.SaleSuccessDTO(obj.seller, SUM(obj.visited), SUM(obj.deals)) "
+    			+ " FROM Sale AS obj GROUP BY obj.seller")
+    	List<SaleSuccessDTO> successGroupedBySeller ();
+    	
+    	
+
+pronto:
+
+[
+    {
+        "sellerName": "Logan",
+        "visited": 1495,
+        "deals": 684
+    },
+    {
+        "sellerName": "Anakin",
+        "visited": 2396,
+        "deals": 1028
+    },
+    {
+        "sellerName": "BarryAllen",
+        "visited": 3385,
+        "deals": 2164
+    },
+    {
+        "sellerName": "Kal-El",
+        "visited": 3040,
+        "deals": 1958
+    },
+    {
+        "sellerName": "Padme",
+        "visited": 3426,
+        "deals": 2369
+    }
+]
+
+
+
+- **COMMIT: Group by search**
