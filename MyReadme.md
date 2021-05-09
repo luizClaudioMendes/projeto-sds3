@@ -1300,3 +1300,113 @@ ex:
 {{host}}/sellers
 
 - **COMMIT: Layers**
+
+### Passo 4: Busca paginada de vendas
+
+- Pageable
+- page, size, sort
+- Evitando interações repetidas ao banco de dados
+
+- criar as classes das camadas anteriores conforme o topico anterior de sales
+
+
+quando queremos buscar dados paginados, agente deve fazer um response usando o objeto Page, conforme abaixo:
+    
+    	public Page<SaleDTO> findAll(Pageable pageable) {
+    		Page<Sale> result = repository.findAll(pageable);
+    		
+    		return result.map(x -> new SaleDTO(x));
+    	}
+    
+
+e o controller:
+    
+    
+    @RestController
+    @RequestMapping(value = "/sales")
+    public class SaleController {
+    	
+    	@Autowired
+    	private SaleService service;
+    	
+    	@GetMapping
+    	public ResponseEntity<Page<SaleDTO>> findAll (Pageable pageable) {
+    		Page<SaleDTO> list = service.findAll(pageable);
+    		
+    		return ResponseEntity.ok(list);
+    	}
+    	
+    
+    }
+    
+	
+o page retorna um objeto especial que dentro dele tem:
+- content -- **que é onde tem a lista de resultados**
+
+mais os seguintes objetos:
+ "pageable": {
+        "sort": {
+            "sorted": false,
+            "unsorted": true,
+            "empty": true
+        },
+        "offset": 0,
+        "pageSize": 20,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": false, --** indica se é a ultima pagina**
+    "totalPages": 9, -- **total de paginas**
+    "totalElements": 170, -- **total de elementos da lista**
+    "size": 20, -- **tamanho da pagina**
+    "number": 0, -- **numero da pagina**
+    "sort": {
+        "sorted": false,
+        "unsorted": true,
+        "empty": true
+    },
+    "numberOfElements": 20,
+    "first": true, --**se é a primeira pagina**
+    "empty": false -- **se a lista de resultados esta vazia**
+
+ok. mas e se quisermos consultar a segunda pagina por exemplo?
+basta adicionar na requisicao o parametro page
+
+ex:
+/sales?page=1
+
+e se quisermos  alterar a quantidade de objetos por pagina?
+basta adicionar o parametro size
+
+ex:
+/sales?page=1&size=5
+
+e para ordenar por data?
+/sales?page=0&size=10&sort=date
+
+e pela data mais antiga?
+/sales?page=0&size=10&sort=date,desc
+
+bom neste momento, agente tem um problema.
+toda vez que a consulta de sales roda, ele faz um monte de selects de seller desnecessarios (uma para cada seller que existe no BD)
+
+na classe Sale, tem um relacionamento com Seller e o padrao do JPA é ir buscar eles todas as vezes.
+
+existem varias formas de se resolver este problema, mas a mais simples neste caso particular (temos poucos vendedores, se tivessemos muitos nao serviria) é:
+
+- buscar a lista de todos os vendedores antes do select final
+
+ex:
+    
+    
+    public Page<SaleDTO> findAll(Pageable pageable) {
+    		sellerRepository.findAll();//solucao do problema de varios selects (somente porque temos poucos vendedores
+    		Page<Sale> result = repository.findAll(pageable);
+    		
+    		return result.map(x -> new SaleDTO(x));
+    	}
+    
+    
+
+- **COMMIT: Pagination**
