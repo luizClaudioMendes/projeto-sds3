@@ -2714,3 +2714,21 @@ e alteramos o datatable para usar o pagination:
 
 
 - **COMMIT: Pagination**
+
+
+Agora, abrimos o Heroku e clicamos para abrir o nosso projeto no navegador.
+
+pegamos o link do projeto de produçao
+
+abrimos o netlify, entramos no projeto, em site settings,
+build e deploy e procuramos por 'enviroment variables'
+
+criamos a variavel BACKEND_URL e colocamos a url do heroku.
+
+no projeto frontend, no arquivo requests.ts, colocamos:
+
+export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8080'
+
+se essa variavel nao estiver definida, ele ira para o localhost mas em prod ele ira para o heroku.
+
+
