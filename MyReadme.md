@@ -2584,3 +2584,133 @@ e ele vai ficar assim:
     
 
 - **COMMIT: DataTable integration**
+
+### Passo 7: Pagination
+
+para fazer um componente de paginaçao vamos usar as Props
+```
+Props
+Argumentos que um componente React pode receber
+```
+
+- Criar componente Pagination
+criar um novo componente chamado de 'Pagination' e o 'index.tsx'
+
+```html
+<div className="row d-flex justify-content-center">
+    <nav>
+        <ul className="pagination">
+            <li className="page-item">
+                <button className="page-link">Anterior</button>
+            </li>
+            <li className="page-item disabled">
+                <span className="page-link">1</span>
+            </li>
+            <li className="page-item disabled">
+                <button className="page-link">Próxima</button>
+            </li>
+        </ul>
+    </nav>
+</div>
+```
+ele vai ficar assim:
+    
+    import { SalePage } from "types/sale";
+    
+    type Props = {
+        page: SalePage;
+        onPageChange: Function;
+    }
+    
+    const Pagination = ({ page, onPageChange } : Props) => {
+    
+        return (
+            <div className="row d-flex justify-content-center">
+                <nav>
+                    <ul className="pagination">
+                        <li className={`page-item ${page.first ? 'disabled': ''}`}>
+                            <button className="page-link" onClick={() => onPageChange(page.number - 1)}>Anterior</button>
+                        </li>
+                        <li className="page-item disabled">
+                            <span className="page-link">{page.number + 1}</span>
+                        </li>
+                        <li className={`page-item ${page.last ? 'disabled': ''}`}>
+                            <button className="page-link" onClick={() => onPageChange(page.number + 1)}>Próxima</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        )
+    }
+    
+    export default Pagination;
+
+e alteramos o datatable para usar o pagination:
+    
+    import axios from "axios";
+    import Pagination from "components/Pagination";
+    import { useEffect, useState } from "react";
+    import { SalePage } from "types/sale";
+    import { formatLocalDate } from "utils/format";
+    import { BASE_URL } from "utils/requests";
+    
+    const DataTable = () => {
+    
+      const [activePage, setActivePage] = useState(0);
+    
+      const [page, setPage] = useState<SalePage>({
+        first: true,
+        number: 0,
+        totalElements: 0,
+        totalPages: 0,
+        last: true
+      });
+    
+      useEffect(() => {
+        axios.get(`${BASE_URL}/sales?page=${activePage}&size=20&sort=date,desc`)
+          .then(response => {
+            setPage(response.data);
+          })
+      }, [activePage]);
+    
+      const changePage = (index: number) => {
+        setActivePage(index);
+      }
+      return (
+        <>
+          <Pagination page={page} onPageChange={changePage}/>
+          <div className="table-responsive">
+            <table className="table table-striped table-sm">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Vendedor</th>
+                  <th>Clientes visitados</th>
+                  <th>Negócios fechados</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {page.content?.map(item => (
+                  <tr key={item.id}>
+                    <td>{formatLocalDate(item.date, "dd/MM/yyyy")}</td>
+                    <td>{item.seller.name}</td>
+                    <td>{item.visited}</td>
+                    <td>{item.deals}</td>
+                    <td>{item.amount.toFixed(2)}</td>
+                  </tr>
+                ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+    
+    export default DataTable;
+    
+
+
+
+- **COMMIT: Pagination**
