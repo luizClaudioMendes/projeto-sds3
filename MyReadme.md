@@ -1684,3 +1684,103 @@ java.runtime.version=11
 vamos fazer o commit agora
 
 - **COMMIT: First homolog**
+
+
+### Passo 7: Implantação no Heroku
+- Criar app no Heroku
+- Provisionar banco Postgres
+- Definir variável APP_PROFILE=prod
+- Conectar ao banco via pgAdmin
+- Criar seed do banco
+---------
+
+- se logue na sua conta no heroku e clique no botao 'new' e 'create a new app'
+
+- em app name colocar o nome do projeto no heroku
+- regiao deixar US
+- clicar em 'create app'
+
+proximo passo é provisionar o BD postgres
+
+- dentro do app criado no heroku, clicar em 'resources' e no campo 'add-ons' procurar por postgres e selecionar 'heroku postgres'
+
+vamos agora definir no heroku a variavel de ambiente APP_PROFILE
+
+- no heroku, na aba 'settings', procurar pelo campo 'config vars' e clicar no botao 'reveal config vars'
+
+ja vai aparecer a variavel DATABASE_URL que foi criada automaticamente com a url do banco de dados do postgres, que ja configuramos no arquivo application-prod.properties
+
+- agora vamos criar uma nova chamada 'APP_PROFILE' com o valor 'prod'
+
+-------
+
+agora vamos nos conectar no banco de produçao via pgAdmin.
+
+para fazer isso, agente pega o valor da variavel DATABASE_URL
+
+nela tem todas as informaçoes para se conectar no BD de prod
+
+ela é composta por:
+
+postgres://
+askdjhqwjaskjd     (NOME DE USUARIO)
+:
+12378971298712376128976 (SENHA)
+@
+asodjasdkjoj4.ajhasihd9qa.ihqwuihe. (HOST)
+:
+9090			(PORTA)
+/
+9kjlj838oijfds (NOME DA BASE DE DADOS)
+
+
+agora no pgAdmin, clicar com o botao direito em 'servers'
+e em 'create a new server'
+
+-colocamos o nome do servidor (que vai aparecer no pgAdmin)
+- na aba connections preenchemos com os dados que obtivemos no heroku
+	- host
+	- maintenance database (nome da database)
+	- username
+	- password
+	- save password (marcar)
+- agora na aba 'advanced', em 'db restrictions' colocar novamente o nome da database, porque senao vai aparecer todas as databases que o heroku colocou nesse BD (que nao sao suas tambem)
+- salvar
+
+pronto. agora o postgres de prod esta configurado no pgadmin.
+
+agora vamos executar nele os mesmos scripts de create.sql e data.sql
+
+--------------------
+
+agora agente precisa enviar a nossa aplicacao do backend para o heroku.
+
+no terminal, na pasta do projeto (a principal que tem o backend e o frontend):
+
+
+```bash
+heroku -v
+heroku login
+```
+após o procedimento de login no terminal clicar em ctrl + c para sair (se perguntar se deseja sair digite s)
+
+ainda no terminal executar:
+
+```bash
+heroku git:remote -a nome do projeto no heroku
+git remote -v
+git subtree push --prefix backend heroku main
+```
+
+este comando "git subtree push --prefix backend heroku main" serve para enviar para o heroku o seu projeto
+
+- 'backend' é o nome da pasta onde esta o backend
+
+no final da publicacao, é exibida a url do projeto ou voce pode ir pelo heroku, no botao 'open app'
+
+ele ira abrir no navegador a url do projeto.
+
+neste momento devera aparecer o erro de white label
+
+com essa url agora podemos configurar o ambiente de produçao no postman e executar as requests para testar.
+
