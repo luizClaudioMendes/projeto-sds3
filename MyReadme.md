@@ -1784,3 +1784,549 @@ neste momento devera aparecer o erro de white label
 
 com essa url agora podemos configurar o ambiente de produçao no postman e executar as requests para testar.
 
+#Aula 3
+
+## Objetivos do projeto para esta aula
+- Integrar back end e front end
+- Três pilares do React
+  - Componentes
+  - Props
+  - Estado
+- React Hooks
+  - useState
+  - useEffect
+- Libs
+  - React Router DOM
+  - Axios
+
+### Passo 1: Rotas
+
+- Instalar React Router DOM
+
+
+**yarn add react-router-dom**
+
+**yarn add @types/react-router-dom -D**
+
+
+- Criar páginas Home e Dashboard
+Home
+
+- dentro da pasta 'src' criar uma nova pasta chamada 'pages' e dentro delas criar duas outras pastas chamadas 'Home' e 'Dashboard'
+
+- dentro de dashboard e home criar um arquivo index.tsx
+
+as paginas nada mais sao do que componentes typescript.
+entao sao identicos aos components, mas para uma questao de organizacao e de rotas, nós dividimos elas em pastas separadas.
+
+neste momento elas estarao assim:
+
+home
+    
+    
+    
+    const Home = ()  => {
+        return (
+            <div>
+               <h1>Página home</h1>
+            </div>
+        );
+    }
+    
+    export default Home;
+    
+    
+
+e Dashboard
+    
+    const Dashboard = ()  => {
+        return (
+            <div>
+               <h1>Página dashboard</h1>
+            </div>
+        );
+    }
+    
+    export default Dashboard;
+    
+
+pronto.
+agora vamos pegar o conteudo que esta no App.tsx e colocar lá no devido lugar
+
+Dashboard
+    
+    import BarChart from "components/BarChart";
+    import DataTable from "components/DataTable";
+    import DonutChart from "components/DonutChart";
+    import Footer from "components/Footer";
+    import NavBar from "components/NavBar";
+    
+    const Dashboard = () => {
+        return (
+            <>
+                <NavBar />
+                <div className="container">
+                    <h1 className="text-primary py-3">Dashboard de vendas</h1>
+                    <div className="row px-3">
+                        <div className="col-sm-6">
+                            <h5 className="text-center text-secondary">Taxa de sucesso (%)</h5>
+                            <BarChart />
+                        </div>
+                        <div className="col-sm-6">
+                            <h5 className="text-center text-secondary">Todas as Vendas</h5>
+                            <DonutChart />
+                        </div>
+    
+                    </div>
+                    <div className="py-3">
+                        <h2 className="text-primary">Todas as vendas</h2>
+                    </div>
+                    <DataTable />
+                </div>
+                <Footer />
+            </>
+        );
+    }
+    
+    export default Dashboard;
+    
+
+e no App.tsx, o retorno que esta vazio agora, ele vai virar um componente que nos vamos criar que será o Routes
+
+----------
+
+- Criar arquivo de rotas `Routes.tsx`
+
+- na raiz do projeto (src), vamos criar o Routes.tsx
+
+este arquivo routes vai definir as rotas do sistema
+
+no retorno dele vamos usar um componente do react DOM chamado BrowserRoutes, como abaixo:
+    
+    
+    import Dashboard from "pages/Dashboard";
+    import Home from "pages/Home";
+    import { BrowserRouter, Route, Switch } from "react-router-dom";
+    
+    const Routes = () => {
+        return (
+            <BrowserRouter>
+                <Switch>
+                    <Route path="/" exact>
+                        <Home/>
+                    </Route>
+                    <Route path="/dashboard">
+                        <Dashboard/>
+                    </Route>
+                </Switch>
+            </BrowserRouter>
+        );
+    }
+    
+    export default Routes;
+    
+
+vamos testar
+
+- **COMMIT: Routes**
+
+
+### Passo 2: Página Home e navegações
+
+a pagina home tem uma apresentaçao mais bonita.
+
+```html
+<div className="container">
+    <div className="jumbotron">
+        <h1 className="display-4">DSVendas</h1>
+        <p className="lead">Analise o desempenho das suas vendas por diferentes perspectivas</p>
+        <hr/>
+        <p>Esta aplicação consiste em exibir um dashboard a partir de dados fornecidos por um back end construído com Spring Boot.</p>
+    </div>
+</div>
+```
+
+ela devera ficar desta forma:
+
+    
+    import Footer from "components/Footer";
+    import NavBar from "components/NavBar";
+    
+    const Home = () => {
+        return (
+            <>
+                <NavBar />
+                <div className="container">
+                    <div className="jumbotron">
+                        <h1 className="display-4">DSVendas</h1>
+                        <p className="lead">Analise o desempenho das suas vendas por diferentes perspectivas</p>
+                        <hr />
+                        <p>Esta aplicação consiste em exibir um dashboard a partir de dados fornecidos por um back end construído com Spring Boot.</p>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+    
+    export default Home;
+    
+
+agora vamos criar um botao para levar para o dashboard:
+
+
+
+
+- Fazer um link na Home para Dashboard
+
+para fazer esse link usaremos um link na pagina home, que parecerá um botao:
+    
+    <Link className="btn-primary btn-lg" to="/dashboard"> 
+                            Acessar o Dashboard
+                        </Link>
+    
+  
+  
+entao a home ficará assim:
+    
+    
+    import Footer from "components/Footer";
+    import NavBar from "components/NavBar";
+    import { Link } from "react-router-dom";
+    
+    const Home = () => {
+        return (
+            <>
+                <NavBar />
+                <div className="container">
+                    <div className="jumbotron">
+                        <h1 className="display-4">DSVendas</h1>
+                        <p className="lead">Analise o desempenho das suas vendas por diferentes perspectivas</p>
+                        <hr />
+                        <p>Esta aplicação consiste em exibir um dashboard a partir de dados fornecidos por um back end construído com Spring Boot.</p>
+                        <Link className="btn-primary btn-lg" to="/dashboard"> 
+                            Acessar o Dashboard
+                        </Link>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+    
+    export default Home;
+    
+
+- Fazer um link na NavBar para Home
+
+agora na navbar, no lugar onde temos a imagem escrita 'devsuperior' vamos colocar um link para voltar para a home:
+    
+    import ImgDsDark from 'assets/img/ds-dark.svg'
+    import { Link } from 'react-router-dom';
+    const NavBar = () => {
+        return (
+            <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-light border-bottom shadow-sm">
+                <div className="container">
+                    <nav className="my-2 my-md-0 mr-md-3">
+                        <Link to="/">
+                            <img src={ImgDsDark} alt="DevSuperior" width="120" />
+                        </Link>
+                    </nav>
+                </div>
+            </div>
+        );
+    }
+    
+    export default NavBar;
+    
+
+
+vamos testar
+
+
+- **COMMIT: Home, navigation**
+
+
+### Passo 3: First request
+o axios é uma biblioteca bem simples para fazer requisiçoes
+
+- Instalar Axios
+```bash
+yarn add axios
+```
+- Definir BASE_URL
+a BASE_URL é o endereço do backend. entao vamos defini-la e tambem a possibilidade de colocar tambem o do heroku.
+
+- entao em 'src', vamos criar uma pagina chamada 'utils'
+- dentro dela criar um arquivo chamado 'requests.ts'
+
+este arquivo é somente .ts e nao .tsx como os outros. o .ts nao sao componentes react
+
+requests.ts
+    
+    export const BASE_URL = 'http://localhost:8080'
+    
+
+agora vamos lembrar o que o endpoint do grafico de rosca, /amount-by-sellers
+
+ao chamar esse endpoint ele retornara uma lista de objetos com atributo de sellerName e Sum.
+
+- Definir tipo local ChartData em DonutChart
+
+entao em 'src', vamos criar uma nova pasta chamada 'types' e vamos criar nela um novo arquivo chamado 'sale.ts'
+
+sale.ts
+    
+    
+    export type SaleSum =  {
+        sellerName: string,
+        sum: number
+    }
+    
+
+agora vamos definir o tipo do chartData. 
+
+dentro do arquivo index.tsx, em DonutChart, antes da function (**const DonutChart = () => {**)  vamos definir o tipo do chartData assim (vai estar da forma errada, sem os hooks):
+
+    
+    
+    import axios from "axios";
+    import Chart from "react-apexcharts";
+    import { BASE_URL } from "utils/requests";
+    
+    type ChartData = {
+        labels: string[];
+        series: number[];
+    }
+    
+    const DonutChart = () => {
+    
+        //FORMA ERRADA
+        let chartData: ChartData = { labels: [], series: [] }
+    
+        //FORMA ERRADA
+        axios.get(`${BASE_URL}/sales/amount-by-seller`)
+            .then(response => {
+                console.log(response.data)
+            })
+    
+        const options = {
+            legend: {
+                show: true
+            }
+        }
+    
+        return (
+            <Chart
+                options={{ ...options, labels: chartData.labels }}
+                series={chartData.series}
+                type="donut"
+                height={240} />
+        );
+    }
+    
+    export default DonutChart;
+    
+    
+    
+
+
+
+esta chamada é assincrona. o problema desta implementaçao o get usa a estrutura de promise.
+
+**o problema é que ele esta chamado a request mais de uma vez.** mas porque?
+
+**o componente grafico de um componente web tem um ciclo de vida que ele vai rendenrizar mais de uma vez, passando na logica mais de uma vez e fazendo a requisicao varias vezes desnecessariamente**
+
+o grafico trabalha com dados diferentes dos que sao retornados na API. ele trabalha com series e com labels.
+
+entao precisamos colocar um map no get do axios:
+    
+    
+    import axios from "axios";
+    import Chart from "react-apexcharts";
+    import { SaleSum } from "types/sale";
+    import { BASE_URL } from "utils/requests";
+    
+    type ChartData = {
+        labels: string[];
+        series: number[];
+    }
+    
+    const DonutChart = () => {
+    
+        //FORMA ERRADA
+        let chartData: ChartData = { labels: [], series: [] }
+    
+        //FORMA ERRADA
+        axios.get(`${BASE_URL}/sales/amount-by-seller`)
+            .then(response => {
+                const data = response.data as SaleSum[];
+                const myLabels = data.map(x => x.sellerName);
+                const mySeries = data.map(x => x.sum);
+    
+                chartData = { labels: myLabels, series: mySeries }
+                console.log(chartData)
+            });
+    
+        const options = {
+            legend: {
+                show: true
+            }
+        }
+    
+        return (
+            <Chart
+                options={{ ...options, labels: chartData.labels }}
+                series={chartData.series}
+                type="donut"
+                height={240} />
+        );
+    }
+    
+    export default DonutChart;
+    
+
+
+- Definir tipo SaleSum
+
+- Fazer a requisição e tratar os dados
+
+- **COMMIT: First request**
+
+
+
+### Passo 4: DonutChart integration
+
+agora precisamos usar os hooks.
+
+o useState mantem o estado do componente.
+embora os dados estejam na variavel, o grafico nao aparece porque ele nao pegou os dados atualizados, por causa do ciclo de vida.
+
+o js chama o componente e antes de ele receber os dados ele ja montou a tela vazia.
+
+para corrigir isso, precisamos usar o useState:
+    
+    
+    import axios from "axios";
+    import { useState } from "react";
+    import Chart from "react-apexcharts";
+    import { SaleSum } from "types/sale";
+    import { BASE_URL } from "utils/requests";
+    
+    type ChartData = {
+        labels: string[];
+        series: number[];
+    }
+    
+    const DonutChart = () => {
+    
+        const [chartData, setChartData] = useState<ChartData>( {labels: [], series: []});
+    
+        //FORMA ERRADA
+        axios.get(`${BASE_URL}/sales/amount-by-seller`)
+            .then(response => {
+                const data = response.data as SaleSum[];
+                const myLabels = data.map(x => x.sellerName);
+                const mySeries = data.map(x => x.sum);
+    
+                setChartData({labels: myLabels, series: mySeries })
+                console.log(chartData)
+            });
+    
+        const options = {
+            legend: {
+                show: true
+            }
+        }
+    
+        return (
+            <Chart
+                options={{ ...options, labels: chartData.labels }}
+                series={chartData.series}
+                type="donut"
+                height={240} />
+        );
+    }
+    
+    export default DonutChart;
+    
+
+
+desta forma parece ter resolvido o problema, mas nao, criou outro pior.
+
+**a request entrou em loop infinito!**
+
+no componente react tem mais um detalhe do ciclo de vida.
+quando voce usa o useState, quando voce atualiza o valor dele o componente vai verificar se houve atualizacao de valor e passa novamente pela logica, que altera o valor e faz o componente verificar novamente, entrando em loop infinito.
+
+a chamada do axios ainda esta da forma errada.
+
+temos que fazer um controla para que a logica seja executada somente uma vez, quando é instanciada.
+
+mas como fazer isso?
+
+usando o outro hook, o useEffect
+
+o useEffect recebe 2 argumentos, o primeiro a funcao que se quer executar, no nosso caso a chamada do axios, e no segundo o componente que se quer observar. ainda neste caso, nao queremos que ele observe ninguem entao colocamos um array vazio ([])
+    
+    import axios from "axios";
+    import { useEffect, useState } from "react";
+    import Chart from "react-apexcharts";
+    import { SaleSum } from "types/sale";
+    import { BASE_URL } from "utils/requests";
+    
+    type ChartData = {
+        labels: string[];
+        series: number[];
+    }
+    
+    const DonutChart = () => {
+    
+        const [chartData, setChartData] = useState<ChartData>({ labels: [], series: [] });
+    
+    
+        useEffect(() => {
+            axios.get(`${BASE_URL}/sales/amount-by-seller`)
+                .then(response => {
+                    const data = response.data as SaleSum[];
+                    const myLabels = data.map(x => x.sellerName);
+                    const mySeries = data.map(x => x.sum);
+    
+                    setChartData({ labels: myLabels, series: mySeries })
+                });
+        }, []);
+    
+    
+    
+        const options = {
+            legend: {
+                show: true
+            }
+        }
+    
+        return (
+            <Chart
+                options={{ ...options, labels: chartData.labels }}
+                series={chartData.series}
+                type="donut"
+                height={240} />
+        );
+    }
+    
+    export default DonutChart;
+    
+
+
+pronto. agora sim esta correto!
+
+```
+Hook: useState
+Manter estado no componente
+```
+```
+Hook: useEffect
+Executar algo na instanciação ou destruição do componente, observar estado
+```
+
+- **COMMIT: DonutChart integration**
