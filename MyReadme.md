@@ -2330,3 +2330,121 @@ Executar algo na instanciação ou destruição do componente, observar estado
 ```
 
 - **COMMIT: DonutChart integration**
+
+### Passo 5: BarChart integration
+vamos começar criando uma funcao auxiliar para arredondar o numero
+
+- Definir função auxiliar round:
+- dentro da pasta 'utils', criar um novo arquivo chamado 'format.ts' e dentro dele colocar este codigo:
+
+```javascript
+export const round = (value: number, precision: number) => {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
+```
+
+- Definir tipo SaleSuccess
+este é o tipo da API retornado no endpoint /sales/success-by-seller
+
+ex:
+     {
+            "sellerName": "Logan",
+            "visited": 1495,
+            "deals": 684
+        }
+	
+entao no arquivo sale.ts vamos adicionar o novo type:
+
+export type SaleSum =  {
+    sellerName: string,
+    sum: number
+}
+
+export type SaleSuccess =   {
+    sellerName: string,
+    visited: number,
+    deals: number
+}
+
+
+- Definir tipo local ChartData em BarChart
+
+no barchart é necessario fazer o mesmo procedimento que fizemos no donut chart, no inicio declarar o type do dado que vem da API, conforme abaixo:
+    
+    import axios from "axios";
+    import { useEffect, useState } from "react";
+    import Chart from "react-apexcharts";
+    import { SaleSuccess } from "types/sale";
+    import { round } from "utils/format";
+    import { BASE_URL } from "utils/requests";
+    
+    type SeriesData = {
+        name: string;
+        data: number[];
+    }
+    
+    type CharData = {
+        labels: {
+            categories: string[]
+        };
+        series: SeriesData[];
+    }
+    
+    const BarChart = () => {
+    
+        const [chartData, setChartData] = useState<CharData>( {
+            labels: {
+                categories: []
+            },
+            series: [
+                {
+                    name: "",
+                    data: []
+                }
+            ]
+        });
+    
+        useEffect(() => {
+            axios.get(`${BASE_URL}/sales/success-by-seller`)
+                .then(response => {
+                    const data = response.data as SaleSuccess[];
+                    const myLabels = data.map(x => x.sellerName);
+                    const mySeries = data.map(x => round(100 * x.deals / x.visited, 1));
+    
+                    setChartData({
+                        labels: {
+                            categories: myLabels
+                        },
+                        series: [
+                            {
+                                name: "% sucesso",
+                                data: mySeries
+                            }
+                        ]
+                    })
+                });
+        }, []);
+    
+        const options = {
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                }
+            },
+        };
+    
+        return (
+            <Chart 
+                options={{...options, xaxis: chartData.labels}} 
+                series={chartData.series} 
+                type="bar" 
+                height={240} />
+        );
+    }
+    
+    export default BarChart;
+    
+
+
+- **COMMIT: BarChart integration**
