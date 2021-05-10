@@ -1599,3 +1599,88 @@ pronto:
 
 
 - **COMMIT: Group by search**
+
+
+### Passo 6: Validação no Postgres local
+
+- Criar três perfis de projeto: test, dev, prod
+- Gerar script SQL no perfil dev
+- Testar projeto no banco Postgres local
+------------------------------
+
+- criar um perfil de aplicacao dev com o seguinte conteudo:
+
+
+#### application-dev.properties
+```
+#spring.jpa.properties.javax.persistence.schema-generation.create-source=metadata
+#spring.jpa.properties.javax.persistence.schema-generation.scripts.action=create
+#spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target=create.sql
+#spring.jpa.properties.hibernate.hbm2ddl.delimiter=;
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/dsvendas
+spring.datasource.username=postgres
+spring.datasource.password=1234567
+
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.hibernate.ddl-auto=none
+```
+
+isto é a configuração do postgres local, considerando que o schema local se chama dsvendas
+
+as 4 linhas comentadas geram o script do banco automaticamente.
+
+nos vamos descomenta-las e rodar a aplicacao novamente, agora no perfil dev
+
+#### application.properties
+```
+spring.profiles.active=dev
+
+spring.jpa.open-in-view=false
+```
+ao fazer isso, na raiz do projeto será criado um arquivo sql chamado create.sql
+
+nos abrimos esse arquivo e copiamos o conteudo para o pgadmin executar em nosso bd.
+
+após a execuçao, o melhor é apagar o script no pgadmin para nao correr o risco de executar novamente.
+
+agora vamos popular as tabelas.
+
+pegamos o arquivo data.sql e copiamos o seu conteudo para o pgadmin e executamos o script.
+
+pronto. nosso banco de dados local esta criado e populado.
+
+vamos testar.
+
+voltamos agora e comentamos de novo as 4 linhas no arquivo de dev.
+
+agora vamos criar o arquivo de produçao e colocamos o codigo abaixo:
+
+#### application-prod.properties
+```
+spring.datasource.url=${DATABASE_URL}
+```
+esse codigo é o que vai rodar no banco de produçao no heroku.
+
+agora vamos fazer o macete de usar uma variavel de ambiente no application properties.
+
+o que ele faz? ele procura pela variavel e caso nao exista, assume o profile de test
+
+#### application.properties
+```
+spring.profiles.active=${APP_PROFILE:test}
+
+spring.jpa.open-in-view=false
+```
+
+agora vamos criar o arquivo system.properties, que é necessario para a implantaçao no heroku.
+
+ele tem que ser exatamente com esse nome e ele tem que estar na raiz do projeto.
+
+#### system.properties
+```
+java.runtime.version=11
+```
+vamos fazer o commit agora
+
+- **COMMIT: First homolog**
